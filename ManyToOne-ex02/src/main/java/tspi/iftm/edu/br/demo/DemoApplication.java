@@ -12,49 +12,62 @@ import br.edu.iftm.biblioteca.repository.LibraryRepository;
 public class DemoApplication implements CommandLineRunner {
 
 	@Autowired
-	private BookRepository bookRepository;
+    private BookRepository bookRepository;
 
-	@Autowired
-	private LibraryRepository libraryRepository;
+    @Autowired
+    private LibraryRepository libraryRepository;
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
+    // Variáveis de instância para book1 e book2
+    private Book book1;
+    private Book book2;
 
-	@Override
-	public void run(String... args) throws Exception {
+    public static void main(String[] args) {
+        SpringApplication.run(BibliotecaApplication.class, args);
+    }
 
-		// criando uma biblioteca
-		Library library = new Library();
-		library.setName("IFTM");
+    @Override
+    public void run(String... args) throws Exception {
 
-		// Criando alguns livros
-		Book book1 = new Book();
-		book1.setName("Java");
-		book1.setLibrary(library);
+        // criando uma biblioteca
+        Library library = new Library();
+        library.setName("IFTM");
 
-		Book book2 = new Book();
-		book2.setName("Spring");
-		book2.setLibrary(library);
+        // Criando alguns livros
+        book1 = new Book();
+        book1.setName("Java");
+        book1.setLibrary(library);
 
-		// Salvando a biblioteca e os livros
-		libraryRepository.save(library);
-		bookRepository.save(book1);
-		// bookRepository.save(book2);
+        book2 = new Book();
+        book2.setName("Spring");
+        book2.setLibrary(library);
 
-		// Buscando todos os livros
-		System.out.println("\n------------------------------------------------\nLivros do BD:");
-		Iterable<Book> books = bookRepository.findAll();
-		books.forEach(book -> {
-			System.out.println(book.getName() + " da biblioteca " + book.getLibrary().getName());
-		});
+        // Salvando a biblioteca e os livros
+        libraryRepository.save(library);
+        bookRepository.save(book1);
+        bookRepository.save(book2);
+    }
 
-		// Buscando todos os livros
-		System.out.println("\n------------------------------------------------\nLivros da RAM:");
-		System.out.println(book1.getName() + " da biblioteca " + book1.getLibrary().getName());
-		System.out.println(book2.getName() + " da biblioteca " + book2.getLibrary().getName());
+    // Buscando todos os livros
+    private static final String SEPARATOR = "\n------------------------------------------------\n";
+    private static final String FROM_LIBRARY = " da biblioteca ";
+    private static final String BD_BOOKS_HEADER = "Livros do BD:";
+    private static final String RAM_BOOKS_HEADER = "Livros da RAM:";
+    private static final String END_MESSAGE = "fim";
 
-		System.out.println("\n------------------------------------------------\nfim");
-	}
+    public void printBooks() {
+        // Printing books from the database
+        System.out.println(SEPARATOR + BD_BOOKS_HEADER);
+        Iterable<Book> books = bookRepository.findAll();
+        books.forEach(book -> {
+            System.out.println(book.getName() + FROM_LIBRARY + book.getLibrary().getName());
+        });
+
+        // Printing books from RAM
+        System.out.println(SEPARATOR + RAM_BOOKS_HEADER);
+        System.out.println(book1.getName() + FROM_LIBRARY + book1.getLibrary().getName());
+        System.out.println(book2.getName() + FROM_LIBRARY + book2.getLibrary().getName());
+
+        System.out.println(SEPARATOR + END_MESSAGE);
+    }
 
 }
